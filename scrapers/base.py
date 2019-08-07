@@ -1,4 +1,5 @@
 
+from bs4 import BeautifulSoup
 import abc, logging, requests, json, pandas as pd
 import settings
 
@@ -57,6 +58,16 @@ class Scraper(abc.ABC):
                 json.dump(data, html_file, skipkeys=True, indent=2)
 
         return output_file
+
+    def get_robots_txt(self) -> str:
+        """Extracts and returns the robots.txt of the root website if it can be found"""
+        self.logger.info('Extracting robots.txt')
+        robots_link = self.base_url.strip('/') + '/' + 'robots.txt'
+        robots_page = self.session.get(robots_link)
+        if robots_page:
+            return robots_page.text
+        else:
+            return ''
   
 class DataScraper(Scraper):
     """A web crawler that can extract and save cleaned data from a website in a structured format"""
